@@ -1,170 +1,143 @@
-# Organization Management Service – Multi-Tenant Backend (FastAPI + MongoDB)
+Organization Management Service – Multi-Tenant Backend
+A production-ready multi-tenant backend system built with FastAPI and MongoDB that provides isolated data storage for each organization through dynamically generated collections.
 
-This project implements a multi-tenant backend system that allows creating and managing organizations, where each organization receives its own dynamically generated MongoDB collection. All organization metadata and admin user details are stored in a dedicated Master Database to maintain scalability, isolation, and structured data management.
+Overview
+This system implements a scalable multi-tenant architecture where each organization receives its own MongoDB collection while maintaining centralized metadata in a Master Database. The service features JWT-based authentication, bcrypt password hashing, and a comprehensive REST API for organization lifecycle management.
 
-The backend is developed using FastAPI with JWT-based authentication and bcrypt-based password hashing.
+Key Features
+Multi-Tenant Architecture – Each organization receives a dedicated collection following the pattern org_<organization_name>
 
----
+Master Database – Centralized storage for organization metadata, admin credentials, and configuration references
 
-## Features
+Secure Authentication – bcrypt password hashing with JWT token generation using python-jose
 
-### 1. Multi-Tenant Architecture
-Each organization receives a separate collection following the pattern:
+REST API – Complete CRUD operations for organization management plus admin authentication
 
-org_<organization_name>
+Architecture
+The project includes a high-level architecture diagram (architecture_diagram.png) illustrating the data flow:
 
-yaml
-Copy code
-
-### 2. Master Database
-The master database stores:
-- Organization metadata  
-- Admin user credentials (hashed)  
-- Collection and configuration references  
-
-### 3. Secure Authentication
-- Passwords hashed using bcrypt  
-- JWT tokens generated using python-jose  
-
-### 4. REST API Endpoints
-- Create Organization  
-- Get Organization Details  
-- Update Organization  
-- Delete Organization  
-- Admin Login  
-
----
-
-## Architecture Diagram
-
-A high-level architecture diagram is included in the repository root:
-
-architecture_diagram.png
-
-yaml
-Copy code
-
-This diagram illustrates:
-
+text
 Client/Admin → FastAPI Backend → Master Database → Dynamic Organization Collections
-
-yaml
-Copy code
-
----
-
-## Project Structure
-
+Project Structure
+text
 app/
-│── main.py
-│── db.py
-│── schemas.py
-│── routes/
-│ ├── org_routes.py
-│ ├── admin_routes.py
-│── utils/
-│ └── security.py
+├── main.py
+├── db.py
+├── schemas.py
+├── routes/
+│   ├── org_routes.py
+│   └── admin_routes.py
+└── utils/
+    └── security.py
 .env
 requirements.txt
 architecture_diagram.png
 README.md
+Tech Stack
+FastAPI – Modern Python web framework
 
-yaml
-Copy code
+MongoDB – NoSQL database for flexible data storage
 
----
+Motor – Asynchronous MongoDB client
 
-## Tech Stack
+bcrypt – Secure password hashing
 
-- FastAPI – Python Web Framework  
-- MongoDB – NoSQL Database  
-- Motor – Asynchronous MongoDB Client  
-- bcrypt – Password Hashing  
-- python-jose – JWT Authentication  
-- Uvicorn – ASGI Server  
+python-jose – JWT authentication
 
----
+Uvicorn – High-performance ASGI server
 
-## Setup Instructions
+Getting Started
+Prerequisites
+Python 3.8+
 
-### 1. Clone the Repository
-```bash
+MongoDB 4.0+
+
+pip package manager
+
+Installation
+Clone the repository:
+
+bash
 git clone <your-repo-url>
 cd organization-management-service
-2. Create the .env File
-Create a .env file in the project root with:
+Install dependencies:
 
-ini
-Copy code
+bash
+pip install -r requirements.txt
+Create a .env file in the project root:
+
+text
 MONGO_URL=mongodb://localhost:27017
 MASTER_DB=organization_master
 JWT_SECRET=your_super_secret_key_here
 JWT_EXPIRES_IN=3600
-3. Install Dependencies
+Running the Application
+Start the development server:
+
 bash
-Copy code
-pip install -r requirements.txt
-4. Run the Server
-bash
-Copy code
 uvicorn app.main:app --reload
-The application will be available at:
+The application will be available at http://127.0.0.1:8000
 
-cpp
-Copy code
-http://127.0.0.1:8000
-5. API Documentation
-Swagger UI:
+API Documentation:
 
-arduino
-Copy code
-http://127.0.0.1:8000/docs
+Swagger UI: http://127.0.0.1:8000/docs
+
+ReDoc: http://127.0.0.1:8000/redoc
+
 API Endpoints
-1. Create Organization
+Organization Management
+Create Organization
+text
 POST /org/create
-Creates a new organization, inserts metadata into the Master Database, and generates a dedicated collection for the organization.
+Creates a new organization with metadata in the Master Database and generates a dedicated collection.
 
-2. Get Organization
+Get Organization
+text
 GET /org/get
 Retrieves metadata for an existing organization.
 
-3. Update Organization
+Update Organization
+text
 PUT /org/update
-Updates organization details and synchronizes data to a newly generated collection.
+Updates organization details and synchronizes data to the organization's collection.
 
-4. Delete Organization
+Delete Organization
+text
 DELETE /org/delete
 Deletes organization metadata and its dynamic collection. Requires authentication.
 
-5. Admin Login
+Authentication
+Admin Login
+text
 POST /admin/login
 Validates administrator credentials and returns a JWT token containing admin and organization identifiers.
 
 Design Choices
 Multi-Tenant Isolation
-Each organization is isolated through a dedicated collection, eliminating cross-tenant data conflicts and simplifying schema management.
+Each organization operates within a dedicated collection, eliminating cross-tenant data conflicts and simplifying schema management per organization.
 
 Master Database for Metadata
-Centralized storage for organizational metadata improves lookup performance and simplifies administration.
+Centralized storage improves lookup performance and provides a single source of truth for organizational information.
 
 JWT-Based Authentication
-Stateless authentication using signed tokens removes the need for maintaining session state on the server.
+Stateless authentication using signed tokens removes the need for server-side session management, enabling horizontal scalability.
 
 Asynchronous I/O Model
-FastAPI and Motor allow efficient handling of concurrent requests and database operations.
+FastAPI and Motor provide efficient handling of concurrent requests and database operations through Python's async/await pattern.
 
 Future Enhancements
-Role-based access control
+ Role-based access control (RBAC)
 
-Refresh token system
+ Refresh token system
 
-Centralized logging and monitoring
+ Centralized logging and monitoring
 
-Rate limiting for endpoints
+ Rate limiting for API endpoints
 
-Organization listing endpoint
+ Organization listing endpoint with pagination
 
-Conversion to class-based service architecture
+ Conversion to class-based service architecture
 
-yaml
-Copy code
+ Database migration tooling
+
+ Comprehensive test suite
